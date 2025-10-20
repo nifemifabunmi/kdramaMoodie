@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Drama Mood Recommender</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 K-Drama Mood Recommender</h1>
+            <p>Find your perfect next binge based on your current mood</p>
+        </div>
+
+        <div class="mood-selector">
+            <h2 style="margin-bottom: 20px; color: #333;">What's your mood today?</h2>
+            <div class="mood-grid">
+                <div class="mood-btn" data-mood="romantic">
+                    <span class="mood-emoji">💕</span>
+                    <span>Romantic</span>
+                </div>
+                <div class="mood-btn" data-mood="thrilling">
+                    <span class="mood-emoji">😱</span>
+                    <span>Thrilling</span>
+                </div>
+                <div class="mood-btn" data-mood="funny">
+                    <span class="mood-emoji">😂</span>
+                    <span>Funny</span>
+                </div>
+                <div class="mood-btn" data-mood="emotional">
+                    <span class="mood-emoji">😢</span>
+                    <span>Emotional</span>
+                </div>
+                <div class="mood-btn" data-mood="inspirational">
+                    <span class="mood-emoji">✨</span>
+                    <span>Inspirational</span>
+                </div>
+                <div class="mood-btn" data-mood="mysterious">
+                    <span class="mood-emoji">🔍</span>
+                    <span>Mysterious</span>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; color: #333;">Preferred Genres (Optional)</h3>
+            <div class="genre-tags">
+                <div class="genre-tag" data-genre="romance">Romance</div>
+                <div class="genre-tag" data-genre="thriller">Thriller</div>
+                <div class="genre-tag" data-genre="comedy">Comedy</div>
+                <div class="genre-tag" data-genre="melodrama">Melodrama</div>
+                <div class="genre-tag" data-genre="fantasy">Fantasy</div>
+                <div class="genre-tag" data-genre="crime">Crime</div>
+                <div class="genre-tag" data-genre="historical">Historical</div>
+                <div class="genre-tag" data-genre="slice-of-life">Slice of Life</div>
+            </div>
+
+            <button class="recommend-btn" onclick="getRecommendations()">
+                🎬 Get My Recommendations
+            </button>
+        </div>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
