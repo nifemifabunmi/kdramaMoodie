@@ -173,8 +173,7 @@ Forgiving Interface: Easy to undo/remove items
 
 
 Drama Database
-Currently includes 12 curated K-Dramas across 6 moods:
-MoodDramas Included💕 RomanticCrash Landing on You, Hometown Cha-Cha-Cha😱 ThrillingSquid Game, Sweet Home😂 FunnyStrong Woman Do Bong-soon, Business Proposal😢 EmotionalMy Mister, Move to Heaven✨ InspirationalStart-Up, Racket Boys🔍 MysteriousSignal, Stranger
+Currently includes 12 curated K-Dramas across 6 moods
 Expanding the Database
 To add more dramas, edit the dramaDatabase object in the JavaScript section:
 javascriptromantic: [
