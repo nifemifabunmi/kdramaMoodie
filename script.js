@@ -1,3 +1,4 @@
+// Database of K-dramas
 const dramaDatabase = {
     romantic: [
         {
@@ -145,9 +146,13 @@ const dramaDatabase = {
     ]
 };
 
+// State management
 let selectedMood = null;
 let selectedGenres = [];
+let watchlist = JSON.parse(localStorage.getItem('kdramaWatchlist')) || [];
+let currentWeekOffset = 0;
 
+// Event Listeners
 document.querySelectorAll('.mood-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
@@ -168,6 +173,7 @@ document.querySelectorAll('.genre-tag').forEach(tag => {
     });
 });
 
+// Main Functions
 function getRecommendations() {
     if (!selectedMood) {
         alert('Please select a mood first! 🎭');
@@ -191,16 +197,20 @@ function getRecommendations() {
             dramas = dramaDatabase[selectedMood];
         }
 
-        let html = '<h2 style="color: white; text-align: center; margin-bottom: 30px; font-size: 2em;">🎬 Your Perfect Matches</h2>';
+        let html = '<h2>🎬 Your Perfect Matches</h2>';
         
         dramas.forEach((drama, index) => {
             const matchScore = 85 + Math.floor(Math.random() * 15);
+            const moodEmojis = drama.moodBoard.split('').map((emoji, i) => 
+                `<span>${emoji}</span>`
+            ).join('');
+            
             html += `
                 <div class="drama-card">
                     <div class="drama-header">
                         <div>
                             <h2 class="drama-title">${drama.title}</h2>
-                            <p style="color: #666; font-size: 1.1em;">${drama.year} • ${drama.episodes} Episodes</p>
+                            <p class="drama-year">${drama.year} • ${drama.episodes} Episodes</p>
                         </div>
                         <div class="match-score">${matchScore}% Match</div>
                     </div>
@@ -209,10 +219,10 @@ function getRecommendations() {
                         ${drama.genres.map(g => `<span class="info-badge">#${g}</span>`).join('')}
                     </div>
                     <p class="drama-synopsis">${drama.synopsis}</p>
-                    <div style="margin-top: 15px;">
-                        <strong style="color: #667eea;">Cast:</strong> ${drama.cast.join(', ')}
+                    <div class="drama-cast">
+                        <strong>Cast:</strong> ${drama.cast.join(', ')}
                     </div>
-                    <div class="mood-board" title="Mood Board">${drama.moodBoard}</div>
+                    <div class="mood-board" title="Mood Board">${moodEmojis}</div>
                     <div class="why-match">
                         <strong>Why this matches your mood:</strong> ${drama.whyMatch}
                     </div>
@@ -223,4 +233,171 @@ function getRecommendations() {
         resultsDiv.innerHTML = html;
         resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 1500);
+}
+
+// Calendar Functions
+function showCalendar() {
+    document.getElementById('calendarSection').style.display = 'block';
+    document.getElementById('calendarSection').scrollIntoView({ behavior: 'smooth' });
+    renderCalendar();
+    renderWatchlist();
+}
+
+function toggleAddDrama() {
+    const form = document.getElementById('addDramaForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+function addDramaToCalendar() {
+    const title = document.getElementById('dramaTitle').value;
+    const totalEpisodes = parseInt(document.getElementById('totalEpisodes').value);
+    const currentEpisode = parseInt(document.getElementById('currentEpisode').value);
+    const airDay = document.getElementById('airDay').value;
+    const airTime = document.getElementById('airTime').value;
+
+    if (!title || !totalEpisodes || !currentEpisode || !airDay || !airTime) {
+        alert('Please fill in all fields! 📝');
+        return;
+    }
+
+    const drama = {
+        id: Date.now(),
+        title,
+        totalEpisodes,
+        currentEpisode,
+        airDay: parseInt(airDay),
+        airTime
+    };
+
+    watchlist.push(drama);
+    localStorage.setItem('kdramaWatchlist', JSON.stringify(watchlist));
+
+    // Clear form
+    document.getElementById('dramaTitle').value = '';
+    document.getElementById('totalEpisodes').value = '';
+    document.getElementById('currentEpisode').value = '';
+    document.getElementById('airDay').value = '';
+    document.getElementById('airTime').value = '';
+
+    toggleAddDrama();
+    renderCalendar();
+    renderWatchlist();
+}
+
+function removeDrama(id) {
+    if (confirm('Remove this drama from your watchlist?')) {
+        watchlist = watchlist.filter(d => d.id !== id);
+        localStorage.setItem('kdramaWatchlist', JSON.stringify(watchlist));
+        renderCalendar();
+        renderWatchlist();
+    }
+}
+
+function changeWeek(offset) {
+    currentWeekOffset += offset;
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const calendarGrid = document.getElementById('calendarGrid');
+    const weekDisplay = document.getElementById('weekDisplay');
+    
+    // Get start of current week + offset
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek + (currentWeekOffset * 7));
+
+    // Update week display
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    if (currentWeekOffset === 0) {
+        weekDisplay.textContent = 'This Week';
+    } else {
+        const options = { month: 'short', day: 'numeric' };
+        weekDisplay.textContent = `${startOfWeek.toLocaleDateString('en-US', options)} - ${endOfWeek.toLocaleDateString('en-US', options)}`;
+    }
+
+    let html = '';
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    for (let i = 0; i < 7; i++) {
+        const currentDay = new Date(startOfWeek);
+        currentDay.setDate(startOfWeek.getDate() + i);
+        
+        const isToday = currentDay.toDateString() === today.toDateString();
+        const dayClass = isToday ? 'day-card today' : 'day-card';
+
+        // Find dramas airing on this day
+        const dramasToday = watchlist.filter(d => d.airDay === i);
+
+        html += `
+            <div class="${dayClass}">
+                <div class="day-header">
+                    <div class="day-name">${dayNames[i]}</div>
+                    <div class="day-date">${currentDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                </div>
+        `;
+
+        if (dramasToday.length > 0) {
+            dramasToday.forEach(drama => {
+                const nextEpisode = drama.currentEpisode + 1;
+                if (nextEpisode <= drama.totalEpisodes) {
+                    html += `
+                        <div class="episode-item">
+                            <div class="episode-title">${drama.title}</div>
+                            <div class="episode-info">Episode ${nextEpisode} • ${drama.airTime}</div>
+                        </div>
+                    `;
+                }
+            });
+        } else {
+            html += `<div class="empty-day">No dramas scheduled</div>`;
+        }
+
+        html += `</div>`;
+    }
+
+    calendarGrid.innerHTML = html;
+}
+
+function renderWatchlist() {
+    const watchlistDiv = document.getElementById('watchlist');
+
+    if (watchlist.length === 0) {
+        watchlistDiv.innerHTML = '<div class="empty-day">Your watchlist is empty. Add some dramas to get started! 📺</div>';
+        return;
+    }
+
+    let html = '';
+    watchlist.forEach(drama => {
+        const progress = (drama.currentEpisode / drama.totalEpisodes) * 100;
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        html += `
+            <div class="watchlist-item">
+                <button class="remove-btn" onclick="removeDrama(${drama.id})">×</button>
+                <h4>${drama.title}</h4>
+                <p>📺 ${drama.currentEpisode} / ${drama.totalEpisodes} episodes</p>
+                <p>📅 Airs ${dayNames[drama.airDay]} at ${drama.airTime}</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+            </div>
+        `;
+    });
+
+    watchlistDiv.innerHTML = html;
+}
+
+// Load calendar if there are saved dramas
+if (watchlist.length > 0) {
+    setTimeout(() => {
+        const calendarBtn = document.createElement('div');
+        calendarBtn.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 15px 25px; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 30px rgba(240, 147, 251, 0.5); z-index: 1000; font-weight: 600; animation: pulse 2s ease-in-out infinite;';
+        calendarBtn.innerHTML = '📅 ' + watchlist.length + ' Drama' + (watchlist.length > 1 ? 's' : '') + ' in Calendar';
+        calendarBtn.onclick = showCalendar;
+        document.body.appendChild(calendarBtn);
+    }, 2000);
 }

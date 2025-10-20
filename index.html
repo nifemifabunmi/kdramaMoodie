@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-Drama Mood Recommender</title>
+    <title>K-Drama Moodie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎭 K-Drama Mood Recommender</h1>
+            <h1>🎭 K-Drama Moodie</h1>
             <p>Find your perfect next binge based on your current mood</p>
         </div>
 
         <div class="mood-selector">
-            <h2 style="margin-bottom: 20px; color: #333;">What's your mood today?</h2>
+            <h2>What's your mood today?</h2>
             <div class="mood-grid">
                 <div class="mood-btn" data-mood="romantic">
                     <span class="mood-emoji">💕</span>
@@ -42,24 +43,80 @@
                 </div>
             </div>
 
-            <h3 style="margin-bottom: 15px; color: #333;">Preferred Genres (Optional)</h3>
-            <div class="genre-tags">
-                <div class="genre-tag" data-genre="romance">Romance</div>
-                <div class="genre-tag" data-genre="thriller">Thriller</div>
-                <div class="genre-tag" data-genre="comedy">Comedy</div>
-                <div class="genre-tag" data-genre="melodrama">Melodrama</div>
-                <div class="genre-tag" data-genre="fantasy">Fantasy</div>
-                <div class="genre-tag" data-genre="crime">Crime</div>
-                <div class="genre-tag" data-genre="historical">Historical</div>
-                <div class="genre-tag" data-genre="slice-of-life">Slice of Life</div>
+            <div class="genre-section">
+                <h3>Preferred Genres (Optional)</h3>
+                <div class="genre-tags">
+                    <div class="genre-tag" data-genre="romance">Romance</div>
+                    <div class="genre-tag" data-genre="thriller">Thriller</div>
+                    <div class="genre-tag" data-genre="comedy">Comedy</div>
+                    <div class="genre-tag" data-genre="melodrama">Melodrama</div>
+                    <div class="genre-tag" data-genre="fantasy">Fantasy</div>
+                    <div class="genre-tag" data-genre="crime">Crime</div>
+                    <div class="genre-tag" data-genre="historical">Historical</div>
+                    <div class="genre-tag" data-genre="slice-of-life">Slice of Life</div>
+                </div>
             </div>
 
             <button class="recommend-btn" onclick="getRecommendations()">
                 🎬 Get My Recommendations
             </button>
+
+            <button class="recommend-btn" onclick="showCalendar()" style="margin-top: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                📅 View My Watch Calendar
+            </button>
         </div>
 
         <div class="results" id="results"></div>
+
+        <!-- Watch Calendar Section -->
+        <div class="calendar-section" id="calendarSection" style="display: none;">
+            <div class="calendar-header">
+                <h2>📅 Your K-Drama Watch Calendar</h2>
+                <p>Stay on top of your ongoing dramas and never miss an episode!</p>
+                <button class="add-drama-btn" onclick="toggleAddDrama()">+ Add Drama to Calendar</button>
+            </div>
+
+            <!-- Add Drama Form -->
+            <div class="add-drama-form" id="addDramaForm" style="display: none;">
+                <h3>Add Drama to Your Calendar</h3>
+                <div class="form-grid">
+                    <input type="text" id="dramaTitle" placeholder="Drama Title" class="form-input">
+                    <input type="number" id="totalEpisodes" placeholder="Total Episodes" class="form-input" min="1">
+                    <input type="number" id="currentEpisode" placeholder="Current Episode" class="form-input" min="1">
+                    <select id="airDay" class="form-input">
+                        <option value="">Select Air Day</option>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                    </select>
+                    <input type="time" id="airTime" placeholder="Air Time" class="form-input">
+                </div>
+                <div class="form-buttons">
+                    <button class="form-btn save-btn" onclick="addDramaToCalendar()">Save Drama</button>
+                    <button class="form-btn cancel-btn" onclick="toggleAddDrama()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="calendar-container">
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="changeWeek(-1)">← Previous Week</button>
+                    <h3 id="weekDisplay">This Week</h3>
+                    <button class="nav-btn" onclick="changeWeek(1)">Next Week →</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <!-- Watchlist -->
+            <div class="watchlist-container">
+                <h3>📺 Your Watchlist</h3>
+                <div id="watchlist" class="watchlist"></div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
